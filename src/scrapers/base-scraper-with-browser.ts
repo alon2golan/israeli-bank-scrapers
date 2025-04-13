@@ -10,6 +10,7 @@ import { type ScraperCredentials, type ScraperScrapingResult } from './interface
 const VIEWPORT_WIDTH = 1024;
 const VIEWPORT_HEIGHT = 768;
 const OK_STATUS = 200;
+const FORBIDDEN_STATUS = 403;
 
 const debug = getDebug('base-scraper-with-browser');
 
@@ -197,7 +198,11 @@ class BaseScraperWithBrowser<TCredentials extends ScraperCredentials> extends Ba
     }
 
     const options: GoToOptions = { ...(timeout === null ? null : { timeout }), waitUntil };
-    const response = await pageToUse.goto(url, options);
+    let response = await pageToUse.goto(url, options);
+    if (response !== null && response.status() === FORBIDDEN_STATUS) {
+      debug('Failed to access at first time with status code: "forbidden (403)". Trying again.');
+      response = await pageToUse.goto(url, options);
+    }
 
     // note: response will be null when navigating to same url while changing the hash part. the condition below will always accept null as valid result.
     if (response !== null && (response === undefined || response.status() !== OK_STATUS)) {
