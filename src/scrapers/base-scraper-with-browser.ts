@@ -1,4 +1,6 @@
-import puppeteer, { type Frame, type GoToOptions, type Page, type PuppeteerLifeCycleEvent } from 'puppeteer';
+import type { Page, Frame, GoToOptions, PuppeteerLifeCycleEvent } from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import stealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { ScraperProgressTypes } from '../definitions';
 import { getDebug } from '../helpers/debug';
 import { clickButton, fillInput, waitUntilElementFound } from '../helpers/elements-interactions';
@@ -6,6 +8,8 @@ import { getCurrentUrl, waitForNavigation } from '../helpers/navigation';
 import { BaseScraper } from './base-scraper';
 import { ScraperErrorTypes } from './errors';
 import { type ScraperCredentials, type ScraperScrapingResult } from './interface';
+
+puppeteer.use(stealthPlugin());
 
 const VIEWPORT_WIDTH = 1024;
 const VIEWPORT_HEIGHT = 768;
